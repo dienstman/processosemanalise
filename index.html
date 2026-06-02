@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script de Atendimento - Setor de Processos em Análise</title>
+    <!-- Tailwind CSS para design ágil e moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons para elementos visuais premium -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    /* Custom scrollbar para melhor estética */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- CABEÇALHO DA APLICAÇÃO -->
+    <header class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2 rounded-xl border border-white/20">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-blue-400"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight">Script de Atendimento</h1>
+                    <p class="text-xs text-blue-300 font-medium tracking-wider uppercase">Setor de Processos em Análise</p>
+                </div>
+            </div>
+            
+            <!-- CAMPOS DE PERSONALIZAÇÃO EM TEMPO REAL -->
+            <div class="flex flex-wrap gap-3 w-full md:w-auto justify-end">
+                <div class="flex-1 md:flex-none min-w-[150px]">
+                    <label class="block text-[10px] uppercase tracking-wider text-slate-300 font-bold mb-1">Nome da Cliente</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 pointer-events-none">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </span>
+                        <input type="text" id="inputCliente" placeholder="FULANA" class="pl-9 pr-3 py-1.5 w-full bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                    </div>
+                </div>
+                <div class="flex-1 md:flex-none min-w-[150px]">
+                    <label class="block text-[10px] uppercase tracking-wider text-slate-300 font-bold mb-1">Seu Nome (Atendente)</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 pointer-events-none">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        </span>
+                        <input type="text" id="inputAtendente" placeholder="Nome do Atendente" class="pl-9 pr-3 py-1.5 w-full bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ÁREA PRINCIPAL COM GRID E NAVEGAÇÃO -->
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex-1 w-full flex flex-col lg:flex-row gap-6">
+        
+        <!-- SIDEBAR DE NAVEGAÇÃO RÁPIDA -->
+        <aside class="lg:w-1/4 flex-shrink-0">
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm sticky top-24">
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider px-3 mb-3 flex items-center gap-2">
+                    <i data-lucide="menu" class="w-4 h-4"></i>
+                    Menu do Script
+                </h2>
+                <nav class="space-y-1" id="menuNav">
+                    <button onclick="scrollToSection('passos-iniciais')" class="menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all flex items-center gap-2.5 bg-blue-50/50 border-l-4 border-blue-600">
+                        <i data-lucide="play-circle" class="w-4 h-4 text-blue-600"></i>
+                        <span>1. Fluxo de Boas-Vindas</span>
+                    </button>
+                    <button onclick="scrollToSection('pendencias-rg')" class="menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2.5">
+                        <i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i>
+                        <span>2. Pendências de RG / CIN</span>
+                    </button>
+                    <button onclick="scrollToSection('contrato-pendente')" class="menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2.5">
+                        <i data-lucide="pen-tool" class="w-4 h-4 text-slate-400"></i>
+                        <span>3. Contrato Pendente</span>
+                    </button>
+                    <button onclick="scrollToSection('biometria-pendente')" class="menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2.5">
+                        <i data-lucide="fingerprint" class="w-4 h-4 text-slate-400"></i>
+                        <span>4. Biometria Pendente</span>
+                    </button>
+                    <button onclick="scrollToSection('casos-cnis')" class="menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2.5">
+                        <i data-lucide="search-code" class="w-4 h-4 text-slate-400"></i>
+                        <span>5. Casos CNIS & Indicadores</span>
+                    </button>
+                    <button onclick="scrollToSection('duvidas-frequentes')" class="menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2.5">
+                        <i data-lucide="help-circle" class="w-4 h-4 text-slate-400"></i>
+                        <span>6. Valores e Prazos</span>
+                    </button>
+                    <button onclick="scrollToSection('prazos-internos')" class="menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2.5">
+                        <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                        <span>7. Cronograma Interno</span>
+                    </button>
+                </nav>
+
+                <div class="mt-6 pt-4 border-t border-slate-100">
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
+                        <div class="flex gap-2 items-start">
+                            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-amber-800">Regra de Ouro</h4>
+                                <p class="text-[11px] text-amber-700 mt-1 leading-relaxed">
+                                    Utilize palavras firmes e de impacto com simpatia. Faça a cliente entender a seriedade de atualizar seus dados para o recebimento do benefício quando necessário.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL (SCRIIPTS) -->
+        <main class="lg:w-3/4 space-y-8 pb-16">
+            
+            <!-- ALERTA DE FLUXO ATIVO -->
+            <div id="feedbackBanner" class="hidden bg-emerald-500 text-white px-4 py-3 rounded-xl font-bold text-center text-sm shadow-md flex items-center justify-center gap-2 animate-bounce">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <span id="feedbackMessage">Script copiado para a área de transferência!</span>
+            </div>
+
+            <!-- SEÇÃO 1: FLUXO DE BOAS-VINDAS -->
+            <section id="passos-iniciais" class="scroll-mt-28 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-200 pb-3">
+                    <div class="bg-blue-600 text-white p-1.5 rounded-lg">
+                        <i data-lucide="play-circle" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">1. Abordagem Inicial & Apresentação</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- PASSO 1: WHATSAPP -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i> PASSO 1 - WhatsApp
+                                </span>
+                                <span class="text-red-500 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded border border-red-200">Obrigatório</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-3">Envie a mensagem inicial para obter autorização para ligar.</p>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap select-all transition-colors" id="script_p1">Olá, <span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, tudo bem?
+Me chamo <span class="placeholder-atendente font-bold text-slate-900">[Nome do Atendente]</span> e faço parte do Setor de Processos em Análise do Script de Atendimento. Estou responsável por acompanhar o seu processo até a concessão. ✨
+Preciso fazer uma ligação para lhe passar novas informações sobre o seu processo. Você consegue me atender agora?</div>
+                        </div>
+                        <button onclick="copyToClipboard('script_p1')" class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Mensagem (WhatsApp)
+                        </button>
+                    </div>
+
+                    <!-- PASSO 2: A LIGAÇÃO -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                                    <i data-lucide="phone-call" class="w-3.5 h-3.5"></i> PASSO 2 - Ligação
+                                </span>
+                                <span class="text-red-500 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded border border-red-200">Obrigatório</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-3">Roteiro falado de alinhamento com a cliente por chamada.</p>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap select-all" id="script_p2">Olá, <span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, tudo bem?
+Estou entrando em contato com você, para lhe passar algumas informações sobre o seu processo. O seu processo avançou de setor e, a partir deste momento, eu ficarei responsável pelo acompanhamento até a concessão.
+
+No momento, o seu processo segue em andamento. Já foram anexados todos os recursos e documentos necessários, e agora precisamos aguardar as próximas movimentações por parte do Servidor.
+
+Gostaria apenas de confirmar algumas informações com você. Seu endereço continua o mesmo: Rua XXXXXXX, nº XXXX, na cidade de XXXXXXXXX, estado XXXXX?
+
+Perfeito. E os números de recado continuam os mesmos? (Confirmar o número, o nome da pessoa e o grau de parentesco)
+
+Por fim, gostaria de saber se você possui alguma dúvida ou se ficou tudo claro até o momento. Nosso contato será realizado a cada 20 dias para informar qualquer nova movimentação no seu processo. Você pode salvar o meu número e, caso surja alguma dúvida nesse período, fico à disposição para ajudá-la.</div>
+                        </div>
+                        <button onclick="copyToClipboard('script_p2')" class="mt-4 w-full bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Guia Falado
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PASSO 3: FINALIZAÇÃO NO WHATSAPP -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-2 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                                <i data-lucide="check-square" class="w-3.5 h-3.5"></i> PASSO 3 - WhatsApp
+                            </span>
+                            <span class="text-red-500 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded border border-red-200">Obrigatório</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Mande os links de acompanhamento e encerre o contato inicial formalmente.</p>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap select-all" id="script_p3">Como conversamos por ligação, qualquer dúvida estou a sua disposição.
+🤳🏼  Nosso Instagram oficial: https://www.instagram.com/grupoferreiralima 
+📲  Nosso facebook: https://www.facebook.com/grupoferreiralima 
+💙  Site: https://site.grupoferreiralima.com.br/
+🏬  Endereço Da Matriz: Rua João Pessoa N° 2639, Bairro Centro, Montenegro RS.          CNPJ: 38.560.203/0001-05</div>
+                    </div>
+                    <div class="w-full md:w-auto flex-shrink-0">
+                        <button onclick="copyToClipboard('script_p3')" class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white py-3 px-6 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Contatos de Finalização
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 2: CASOS DE RG PENDENTE / NOVA CIN -->
+            <section id="pendencias-rg" class="scroll-mt-28 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-200 pb-3">
+                    <div class="bg-red-600 text-white p-1.5 rounded-lg">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">2. Casos de RG / CIN Pendente</h3>
+                </div>
+
+                <!-- ABAS INTERNAS PARA SITUAÇÃO DO RG -->
+                <div class="bg-slate-100 p-1 rounded-xl flex flex-wrap gap-1 mb-4">
+                    <button onclick="showSubTab('rg-agendar', this)" class="subtab-btn-rg flex-1 text-center py-2 px-3 rounded-lg text-xs font-bold text-blue-700 bg-white shadow-sm transition-all">
+                        Sem agendamento (Nós agendamos)
+                    </button>
+                    <button onclick="showSubTab('rg-retirada', this)" class="subtab-btn-rg flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/50 transition-all">
+                        Aguardando Retirada
+                    </button>
+                    <button onclick="showSubTab('rg-resistencia', this)" class="subtab-btn-rg flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/50 transition-all">
+                        Apresenta Resistência
+                    </button>
+                    <button onclick="showSubTab('rg-semcertidao', this)" class="subtab-btn-rg flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/50 transition-all">
+                        Sem Certidão / CRAS
+                    </button>
+                    <button onclick="showSubTab('rg-presencial', this)" class="subtab-btn-rg flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/50 transition-all">
+                        Agendamento Presencial
+                    </button>
+                </div>
+
+                <!-- SUB SEÇÕES DO RG -->
+                <div id="rg-contents" class="space-y-4">
+                    
+                    <!-- 1. Nós conseguimos agendar -->
+                    <div id="rg-agendar" class="rg-card space-y-4">
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                Situação: Conseguimos realizar o agendamento de forma online
+                            </h4>
+                            <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl mb-4 text-xs text-blue-800 space-y-1">
+                                <p class="font-bold">📋 Procedimento Interno do Setor:</p>
+                                <ul class="list-disc pl-4 space-y-0.5">
+                                    <li>Tentar agendamento na cidade do cliente.</li>
+                                    <li>Caso indisponível, tentar cidades vizinhas (até 40 minutos de distância).</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_rg1">Como você já sabe, é necessário atualizar o seu documento, e eu consegui realizar o agendamento para você. Ficou marcado para o dia <span class="bg-yellow-100 text-slate-900 px-1 rounded font-mono">[DATA]</span>, às <span class="bg-yellow-100 text-slate-900 px-1 rounded font-mono">[HORÁRIO]</span>, no <span class="bg-yellow-100 text-slate-900 px-1 rounded font-mono">[LOCAL]</span>.
+
+Vou encaminhar o protocolo de agendamento para você. (Enviar protocolo PDF)
+
+É muito importante que você compareça na data e horário marcados para realizar a emissão do documento, para que possamos seguir normalmente com o andamento do seu processo e, ao final, você consiga receber o seu benefício sem nenhuma interferência.</div>
+                            <button onclick="copyToClipboard('script_rg1')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. Aguardando retirada -->
+                    <div id="rg-retirada" class="rg-card hidden space-y-4">
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                Situação: Documento emitido, aguardando retirada da cliente
+                            </h4>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_rg2"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, gostaria de verificar com você se já conseguiu retirar o seu documento atualizado. 
+
+Caso já esteja com ele em mãos, preciso que você me envie uma foto do documento atualizado, para que eu possa anexar aqui no sistema e dar continuidade ao acompanhamento do seu processo.</div>
+                            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl mb-4 text-xs text-amber-800">
+                                <strong>⚠️ Atenção interna:</strong> Caso a cliente não tenha comparecido no agendamento inicial, será necessário agendar novamente imediatamente.
+                            </div>
+                            <button onclick="copyToClipboard('script_rg2')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. Cliente apresenta resistência -->
+                    <div id="rg-resistencia" class="rg-card hidden space-y-4">
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <h4 class="font-bold text-red-700 text-sm mb-2 flex items-center gap-1.5">
+                                <i data-lucide="octagon-alert" class="w-4 h-4 text-red-600"></i>
+                                Situação: Cliente resistindo à emissão de novo documento
+                            </h4>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_rg3"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, desde o início do processo foi informado para você sobre a importância de manter o documento atualizado.
+
+Os bancos são bastante criteriosos quando se trata do pagamento de benefícios. Por isso, não adianta darmos andamento em todo o processo, trabalharmos para que ele seja concedido e, no final, você não conseguir receber o benefício por conta do documento.
+
+Se estamos orientando você a emitir um novo RG, é porque realmente existe essa necessidade. Caso contrário, jamais solicitaríamos algo que não fosse necessário para o andamento do seu processo.</div>
+                            <div class="p-3 bg-red-50 border border-red-200 rounded-xl mb-4 text-xs text-red-800">
+                                <strong>⚠️ Ação da coordenação:</strong> Se ela continuar com resistência marcante, repasse o caso para a coordenação ou supervisão avaliar as medidas cabíveis.
+                            </div>
+                            <button onclick="copyToClipboard('script_rg3')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all font-semibold">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Argumentação Firme
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4. Sem certidão / CRAS -->
+                    <div id="rg-semcertidao" class="rg-card hidden space-y-4">
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-violet-500"></span>
+                                Situação: Cliente sem certidão de nascimento e sem condições financeiras
+                            </h4>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_rg4"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, nesse caso podemos encaminhar para você um termo de hipossuficiência. 
+
+Com esse documento em mãos, você precisará ir até o CRAS da sua cidade para coletar a assinatura. Após isso, você poderá comparecer ao cartório e apresentar esse documento para fazer a tentativa de emissão de uma nova certidão de forma gratuita.</div>
+                            
+                            <!-- Subquestionamento sobre gratuidade -->
+                            <div class="mt-4 p-4 bg-violet-50 border border-violet-100 rounded-xl">
+                                <h5 class="text-xs font-extrabold text-violet-800 uppercase mb-2">Se ela perguntar se a gratuidade é 100% garantida:</h5>
+                                <div class="bg-white/80 border border-violet-200 rounded-lg p-3 text-sm text-slate-700 mb-2 whitespace-pre-wrap" id="script_rg4_extra">Temos vários casos aqui no escritório de pessoas na mesma situação que você, que apresentaram esse documento e conseguiram emitir a certidão gratuitamente.
+
+Porém, não conseguimos garantir com 100% de certeza, pois cada cartório pode ter um procedimento diferente.
+
+O mais importante é que você siga essas orientações para conseguir emitir a nova certidão e, em seguida, o seu RG, para que não tenha problemas no momento de receber o seu benefício.</div>
+                                <button onclick="copyToClipboard('script_rg4_extra')" class="bg-violet-900 hover:bg-violet-800 text-white py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar Resposta Gratuito
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Agendamento Presencial -->
+                    <div id="rg-presencial" class="rg-card hidden space-y-4">
+                        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                            <h4 class="font-bold text-slate-900 text-sm mb-2 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                Situação: Não há agendamento online (Cliente precisa ir ao posto de atendimento)
+                            </h4>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_rg5"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, fiz a tentativa de realizar o agendamento do seu documento para você, porém verifiquei que, neste caso, o agendamento é realizado apenas de forma presencial.
+
+Sendo assim, será necessário que você compareça ao posto de atendimento mais próximo da sua residência para realizar o agendamento e dar início à emissão do seu novo documento. Você conseguiria comparecer ainda hoje?</div>
+                            <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-xl mb-4 text-xs text-yellow-800">
+                                <strong>💡 Urgência do Setor:</strong> O uso da expressão <em>"ainda hoje"</em> busca transmitir maior pressa no andamento do processo.
+                            </div>
+                            
+                            <!-- Subquestionamento: Se ela disser que não pode ir hoje -->
+                            <div class="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                                <h5 class="text-xs font-extrabold text-orange-800 uppercase mb-2">Se a cliente alegar que não consegue ir no mesmo dia:</h5>
+                                <div class="bg-white/85 border border-orange-300 rounded-lg p-3 text-sm text-slate-700 mb-2 whitespace-pre-wrap" id="script_rg5_extra">Entendo, porém o seu processo já está em andamento e pode ter movimentações a qualquer momento, inclusive até mesmo ser concedido.
+
+Por isso, precisamos que o agendamento seja realizado o quanto antes. Você conseguiria comparecer até o final desta semana, no máximo?</div>
+                                <button onclick="copyToClipboard('script_rg5_extra')" class="bg-orange-950 text-white py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar Resposta Adiantamento
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- GUIA DE DOCUMENTOS PARA LEVAR - NOVO RG (CIN) -->
+                <div class="bg-indigo-950 text-slate-200 rounded-2xl p-5 shadow-sm border border-slate-800">
+                    <h4 class="font-bold text-white text-sm mb-3 flex items-center gap-2">
+                        <i data-lucide="info" class="w-5 h-5 text-indigo-400"></i>
+                        Guia Útil para o Novo Documento (Primeira Via da CIN é Gratuita)
+                    </h4>
+                    <p class="text-xs text-slate-300 mb-4">Envie ou informe à cliente os itens que ela precisa levar no dia:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <ul class="space-y-1.5 list-none">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Documento de identificação atual</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Comprovante de endereço residencial</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Protocolo impresso do agendamento (se houver)</li>
+                        </ul>
+                        <ul class="space-y-1.5 list-none">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Certidão de Nascimento (se Solteira)</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Certidão de Casamento (se Casada)</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Certidão de Divórcio com Averbação</li>
+                        </ul>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-amber-300">
+                        <strong>📌 Aviso Opcional Adicional:</strong> "Caso você não consiga comparecer no dia e horário agendados, por gentileza me avise com antecedência para que possamos cancelar o agendamento e realizar um novo para você."
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 3: CASO CONTRATO PENDENTE -->
+            <section id="contrato-pendente" class="scroll-mt-28 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-200 pb-3">
+                    <div class="bg-indigo-600 text-white p-1.5 rounded-lg">
+                        <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">3. Casos de Contrato Físico Pendente</h3>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs text-slate-500">Garante a regularização do contrato assinado fisicamente igual ao documento.</p>
+                        <span class="text-amber-600 text-[11px] font-bold bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
+                            <i data-lucide="clock" class="w-3 h-3"></i> Prioridade de Envio
+                        </span>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_contrato"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, verifiquei aqui no sistema que ainda está pendente o envio do contrato físico assinado. Você já conseguiu imprimir e assinar para nos encaminhar?
+
+(Se ela ainda não assinou):
+Quando você for realizar a assinatura, é importante que assine da mesma forma que está no seu documento de identificação, para evitar qualquer divergência na conferência dos documentos.
+
+Assim que possível, nos encaminhe o contrato assinado para que possamos anexar ao sistema e dar continuidade ao seu processo, você consegue nos encaminhar ainda hoje?</div>
+                    
+                    <button onclick="copyToClipboard('script_contrato')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                        <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script de Contrato
+                    </button>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 4: BIOMETRIA PENDENTE -->
+            <section id="biometria-pendente" class="scroll-mt-28 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-200 pb-3">
+                    <div class="bg-emerald-600 text-white p-1.5 rounded-lg">
+                        <i data-lucide="fingerprint" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">4. Casos de Biometria Pendente</h3>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 space-y-1">
+                        <p class="font-bold">📋 Fluxo Interno para Agendamento da Biometria:</p>
+                        <ul class="list-disc pl-4 space-y-0.5">
+                            <li>Realizar tentativa de agendamento na própria cidade da cliente.</li>
+                            <li>Caso indisponível, tentar as cidades limítrofes.</li>
+                            <li>Se não for possível de forma online, seguir para o script de <strong>"Agendamento Presencial"</strong> abaixo.</li>
+                        </ul>
+                    </div>
+
+                    <!-- ABAS BIOMETRIA -->
+                    <div class="bg-slate-100 p-1 rounded-xl flex gap-1">
+                        <button onclick="showSubTabBiometria('bio-agendado', this)" class="subtab-btn-bio flex-1 text-center py-2 px-3 rounded-lg text-xs font-bold text-blue-700 bg-white shadow-sm transition-all">
+                            Agendado pelo Sistema
+                        </button>
+                        <button onclick="showSubTabBiometria('bio-presencial', this)" class="subtab-btn-bio flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/50 transition-all">
+                            Agendamento Presencial Obrigatório
+                        </button>
+                    </div>
+
+                    <div id="bio-contents">
+                        <!-- BIOMETRIA MARCADA ONLINE -->
+                        <div id="bio-agendado" class="bio-card space-y-4">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_bio1"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, verificamos aqui no sistema que você ainda não possui a biometria coletada. Para dar continuidade ao seu processo, é muito importante que essa coleta esteja em dia. Sendo assim, vou verificar aqui no sistema e realizar o agendamento para você.</div>
+                            <button onclick="copyToClipboard('script_bio1')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Alerta Inicial Biometria
+                            </button>
+                        </div>
+
+                        <!-- BIOMETRIA NO CARTÓRIO LOCAL -->
+                        <div id="bio-presencial" class="bio-card hidden space-y-4">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_bio2"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, fiz a tentativa de realizar a coleta para você, porém verifiquei que, neste caso, o agendamento é realizado apenas de forma presencial. Sendo assim, será necessário que você compareça no cartório mais próximo da sua residência para realizar o agendamento e a coleta da sua biometria. Você conseguiria comparecer ainda hoje?</div>
+                            
+                            <!-- Se ela negar -->
+                            <div class="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                                <h5 class="text-xs font-extrabold text-orange-800 uppercase mb-2">Se ela disser que não consegue ir hoje:</h5>
+                                <div class="bg-white/85 border border-orange-300 rounded-lg p-3 text-sm text-slate-700 mb-2 whitespace-pre-wrap" id="script_bio2_extra">Entendo, porém o seu processo já está em andamento e pode ter movimentações a qualquer momento, inclusive até mesmo ser concedido.
+
+Por isso, precisamos que a coleta seja realizada o quanto antes. Você conseguiria comparecer até o final desta semana, no máximo?</div>
+                                <button onclick="copyToClipboard('script_bio2_extra')" class="bg-orange-950 text-white py-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all">
+                                    <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar Resposta de Insistência
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REQUISITOS BIOMETRIA -->
+                    <div class="p-4 bg-slate-900 text-slate-200 rounded-xl text-xs space-y-2">
+                        <p class="font-bold text-white flex items-center gap-2"><i data-lucide="alert-circle" class="text-emerald-400"></i> Informação Útil: A Coleta de Biometria é Gratuita!</p>
+                        <p>A cliente precisa levar no agendamento:</p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-300 pl-4">
+                            <span>• Documento de identificação com foto</span>
+                            <span>• Comprovante de residência atualizado</span>
+                            <span>• Protocolo do agendamento (se houver)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 5: ANÁLISE DETALHADA E CASOS ESPECIAIS (CNIS) -->
+            <section id="casos-cnis" class="scroll-mt-28 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-3 flex-wrap gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-indigo-900 text-white p-1.5 rounded-lg">
+                            <i data-lucide="search-code" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">5. Consultas do CNIS & Argumentações</h3>
+                    </div>
+                    <span class="text-blue-900 text-xs font-bold bg-blue-50 border border-blue-200 py-1 px-3 rounded-lg flex items-center gap-1.5">
+                        <i data-lucide="zoom-in" class="w-4 h-4"></i> Leitura de Indicadores Prev.
+                    </span>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Se o cliente questionar de forma recorrente o prazo e a demora, o atendente deve obrigatoriamente abrir o CNIS, identificar as particularidades do caso (vínculos curtos, falta de contribuição, etc.) e explicar usando palavras firmes.
+                    </p>
+
+                    <!-- SELETOR DE CASO CNIS -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                        <button onclick="selectCNISCase('caso-curto', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-indigo-600 text-indigo-700 font-bold text-xs rounded-t-lg bg-slate-50 transition-all">
+                            Pouco Trabalho
+                        </button>
+                        <button onclick="selectCNISCase('caso-longo', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all">
+                            Longo Período Fora
+                        </button>
+                        <button onclick="selectCNISCase('caso-trabalhista', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all">
+                            Ação Trabalhista
+                        </button>
+                        <button onclick="selectCNISCase('caso-intermitente', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all">
+                            Vínculo Intermitente
+                        </button>
+                        <button onclick="selectCNISCase('caso-pext', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all">
+                            PEXT (Extempore)
+                        </button>
+                        <button onclick="selectCNISCase('caso-darf', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all">
+                            DARF / Abaixo Mín.
+                        </button>
+                        <button onclick="selectCNISCase('caso-reintegracao', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all col-span-2 sm:col-span-1">
+                            Reintegração
+                        </button>
+                        <button onclick="selectCNISCase('caso-proporcional', this)" class="cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all col-span-2 sm:col-span-1">
+                            Liberado Proporcional
+                        </button>
+                    </div>
+
+                    <!-- DETALHES DE CADA CASO -->
+                    <div id="cnis-cards">
+                        
+                        <!-- CASO 1: Pouco tempo de contribuição -->
+                        <div id="caso-curto" class="cnis-content-card space-y-3">
+                            <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl">
+                                <h4 class="text-xs font-bold text-indigo-900 uppercase">Contexto de Análise (Exemplo da Imagem do Documento)</h4>
+                                <p class="text-[11px] text-slate-600 mt-1">Exemplo: Período com apenas 45 dias trabalhados (Empresa ZAMP S.A.), com início em 16/04/2025 e fim em 01/06/2025. Apresenta o indicador <strong class="bg-amber-100 text-amber-800 px-1 rounded">IREM-INDPEND</strong> (Indica recolhimento irregular ou pendente de acerto).</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_curto"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, seu caso é BEM delicado, pois você trabalhou APENAS 45 dias em toda a sua vida trabalhista, e por esse motivo constam alguns indicadores nas suas contribuições, que precisam ser regularizados para que o seu benefício possa ser concedido.
+
+Mas pode ficar tranquila, pois já anexamos todos os recursos necessários no seu processo. Agora precisamos apenas aguardar as próximas movimentações.</div>
+                            <button onclick="copyToClipboard('script_cnis_curto')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                        <!-- CASO 2: Longo período sem contribuição -->
+                        <div id="caso-longo" class="cnis-content-card hidden space-y-3">
+                            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                                <strong>💡 Definição:</strong> Quando a data de saída do último emprego oficial ocorreu muito tempo antes do nascimento do bebê (ex: saída em Fev/2023, parto apenas em Março/2025).
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_longo"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, você saiu do seu último emprego LÁ em fevereiro de 2023, e o nascimento do seu bebê ocorreu SOMENTE em março de 2025, ou seja, houve um longo período sem contribuições.
+
+Por isso, o seu caso exige recursos mais complexos. Mas pode ficar tranquila, pois já anexamos todos as documentações necessários e agora precisamos aguardar as próximas movimentações do processo.</div>
+                            <button onclick="copyToClipboard('script_cnis_longo')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                        <!-- CASO 3: Ação Trabalhista ativa -->
+                        <div id="caso-trabalhista" class="cnis-content-card hidden space-y-3">
+                            <div class="p-3 bg-slate-100 rounded-xl text-xs text-slate-700">
+                                <strong>💡 Definição:</strong> Quando o trabalhador ingressa com processo judicial contra a empresa. O INSS aguarda e faz verificação minuciosa para evitar duplicidade ou divergência cadastral.
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_trabalhista"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, como você ingressou com um processo trabalhista contra a empresa, o INSS realiza uma análise mais criteriosa do seu pedido. Isso acontece porque, quando há uma ação sobre a empresa que você trabalhou, verbas ou registro na carteira, o servidor precisa confirmar todas as informações antes de liberar o benefício.
+
+Isso significa apenas que o seu processo pode levar um pouco mais de tempo para análise. Mas pode ficar tranquila, pois já estamos tomando todas as providências necessárias, apresentando a documentação correta e reforçando as informações para que o servidor faça a liberação o quanto antes. Estamos acompanhando o seu processo de perto, e qualquer movimentação relevante te avisamos imediatamente.</div>
+                            <button onclick="copyToClipboard('script_cnis_trabalhista')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                        <!-- CASO 4: Trabalho Intermitente -->
+                        <div id="caso-intermitente" class="cnis-content-card hidden space-y-3">
+                            <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-slate-700 leading-relaxed">
+                                <strong>💡 Definição:</strong> Trabalho onde o empregado é convocado esporadicamente. A empresa deve atualizar e retificar no e-Social as competências que geraram renda para que a segurada tenha direito.
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_intermitente"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, como você trabalhava como intermitente, ou seja, somente quando era chamada ou convocada pela empresa, o INSS costuma fazer uma análise mais detalhada do seu caso. Eles solicitam documentações sobre o seu vínculo empregatício para confirmar períodos trabalhados e remunerações.
+
+Também é necessário que a empresa realize a retificação das informações no E-Social, informando corretamente os dias que você trabalhou e os salários recebidos. O INSS utiliza esses dados para validar e liberar o seu benefício. Por esse motivo, o seu processo pode levar um pouco mais de tempo que o habitual.
+
+Mas pode ficar tranquila, pois estamos acompanhando de perto, mantendo contato com a empresa para as devidas regularizações e tomando todas as providências para que a liberação ocorra o quanto antes.</div>
+                            <button onclick="copyToClipboard('script_cnis_intermitente')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                        <!-- CASO 5: PEXT (Vínculo Extemporâneo) -->
+                        <div id="caso-pext" class="cnis-content-card hidden space-y-3">
+                            <div class="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 leading-relaxed">
+                                <strong>💡 Definição:</strong> O vínculo empregatício foi enviado fora do prazo ou com falha. Impede a contagem automática no sistema do INSS. Exige o envio de documentos como a carteira física, termos de rescisão, holerites, etc.
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_pext"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, o seu caso é um pouco mais delicado, pois existem indicadores nas suas contribuições que precisam ser regularizados para que o seu benefício seja aprovado. Quero que você saiba que não é culpa sua, o problema ocorreu porque a empresa fez a declaração de forma incorreta no sistema, mas estamos trabalhando para regularizar tudo o mais rápido possível. Assim que houver novas movimentações ou atualizações, manteremos você informada imediatamente.</div>
+                            <button onclick="copyToClipboard('script_cnis_pext')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                        <!-- CASO 6: DARF Paga / Recolhimento Abaixo do Mínimo -->
+                        <div id="caso-darf" class="cnis-content-card hidden space-y-3">
+                            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                                <strong>💡 Definição:</strong> A contribuição recolhida pela empresa é menor que o salário mínimo legal da época. Requer pagamento de boleto complementar para que a competência seja validada pelo INSS.
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_darf"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, no seu caso, como houve pagamento do boleto de complementação, o servidor precisa aguardar a compensação desse valor no sistema. O boleto de complementação é utilizado quando a contribuição enviada pela empresa foi inferior ao salário mínimo exigido para aquele mês.
+
+Por isso, é necessário pagar o boleto para regularizar a competência, e estamos acompanhando todo o processo de perto, e assim que o pagamento migrar, e houver atualização no sistema, manteremos você informada.</div>
+                            <button onclick="copyToClipboard('script_cnis_darf')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                        <!-- CASO 7: Reintegração de Vínculo -->
+                        <div id="caso-reintegracao" class="cnis-content-card hidden space-y-3">
+                            <div class="p-3 bg-slate-100 rounded-xl text-xs text-slate-700 leading-relaxed">
+                                <strong>💡 Definição:</strong> Ocorre quando um trabalhador desliga-se e depois retorna à mesma empresa. Requer análise manual cuidadosa do servidor para confirmar quem deve efetuar o pagamento.
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_reintegracao"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, no seu caso, consta no sistema um indicador de reintegração no vínculo empregatício, isso significa que, em algum momento, houve um desligamento seu registrado e, posteriormente, um retorno ao trabalho na mesma empresa.
+
+Por conta desse indicador, o INSS não analisa o seu benefício automaticamente, pois precisa confirmar, se o vínculo está ativo ou se foi encerrado corretamente, quem será responsável pelo pagamento do salário-maternidade, e se existem informações divergentes no sistema que precisem ser regularizados.
+
+Por isso, o seu processo pode levar um pouco mais de tempo, pois exige análise detalhada do vínculo. Mas pode ficar tranquila, pois estamos acompanhando tudo de perto e, assim que houver qualquer atualização, manteremos você informada imediatamente.</div>
+                            <button onclick="copyToClipboard('script_cnis_reintegracao')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                        <!-- CASO 8: Liberado Proporcional -->
+                        <div id="caso-proporcional" class="cnis-content-card hidden space-y-3">
+                            <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800">
+                                <strong>💡 Definição:</strong> Quando a mãe retorna às atividades trabalhistas antes de completar os 120 dias de licença. O INSS encerra o benefício proporcionalmente e paga apenas os dias de real afastamento.
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap" id="script_cnis_proporcional"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, como você retornou ao trabalho antes de completar os 120 dias de afastamento após o parto, o INSS realizou o pagamento do salário-maternidade de forma proporcional. Isso significa que você receberá apenas o valor correspondente aos dias em que realmente esteve afastada das atividades.
+
+Quando houve o seu retorno ao trabalho, o afastamento foi considerado encerrado, por isso não há pagamento referente aos dias posteriores. Mas é importante saber que isso não representa perda do seu direito ao benefício, apenas que o recebimento do benefício será proporcional ao período que você ficou afastada. É um caso mais delicado, mas estamos trabalhando para que seja liberado o quanto antes.</div>
+                            <button onclick="copyToClipboard('script_cnis_proporcional')" class="bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Script
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 6: PRAZOS, VALORES E OUTRAS DÚVIDAS -->
+            <section id="duvidas-frequentes" class="scroll-mt-28 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-200 pb-3">
+                    <div class="bg-indigo-700 text-white p-1.5 rounded-lg">
+                        <i data-lucide="help-circle" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">6. Valores, Formas de Pagamento e Prazos</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    <!-- PRAZO DE ANÁLISE -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-1 rounded-full font-bold inline-block mb-3">Qual o Prazo?</span>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_duvida_prazo"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, o prazo estimado para análise do processo é de 30 a 90 dias após o envio da certidão de nascimento, podendo variar.
+
+Esse é um prazo estimado, baseado em protocolos anteriores, ou seja, processos que já foram concluídos. No entanto, pode ocorrer variação de acordo com cada caso, principalmente se houver alguma exigência ou necessidade de análise mais detalhada por parte do Servidor.</div>
+                        </div>
+                        <button onclick="copyToClipboard('script_duvida_prazo')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Argumento Prazo
+                        </button>
+                    </div>
+
+                    <!-- CERTIDÃO PENDENTE - QUANDO FOI ANEXADA -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-full font-bold inline-block mb-3">Momento de Anexar Certidão</span>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_duvida_certidao"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, nosso escritório atua há mais de 12 anos no mercado, sendo especializado em Salário Maternidade e outros benefícios. 
+
+Trabalhamos com prazos específicos, sabendo exatamente o momento mais adequado para anexar cada documento, para que o processo tenha a melhor condução possível e aumente as chances de concessão do benefício.</div>
+                        </div>
+                        <button onclick="copyToClipboard('script_duvida_certidao')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Argumento Autoridade
+                        </button>
+                    </div>
+
+                    <!-- CONFIRMAÇÃO DE VALORES -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="bg-slate-100 text-slate-800 text-xs px-2.5 py-1 rounded-full font-bold inline-block mb-3">Questionamentos sobre Valores</span>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_duvida_valores"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, o valor exato do benefício só conseguimos confirmar após a concessão, pois nesse momento o sistema libera todas as informações completas.
+
+Assim que o benefício for concedido, o setor financeiro entrará em contato com você para explicar todos os detalhes.
+
+Hoje, de forma geral, os benefícios têm iniciado a partir de aproximadamente R$ 7.000,00, podendo variar de acordo com cada caso.</div>
+                        </div>
+                        <button onclick="copyToClipboard('script_duvida_valores')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Resposta de Valores
+                        </button>
+                    </div>
+
+                    <!-- FORMA DE PAGAMENTO -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2.5 py-1 rounded-full font-bold inline-block mb-3">Parcela Única ou Dividido?</span>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap mb-4" id="script_duvida_pagamento"><span class="placeholder-cliente font-bold text-blue-700">[FULANA]</span>, essa informação só temos acesso quando o benefício é concedido.
+
+Temos casos de mãezinhas que recebem o valor total em uma única parcela, mas também existem casos em que o benefício é pago em 2, 3 ou até 4 parcelas.
+
+Assim que o seu benefício for concedido, o setor financeiro entrará em contato com você para passar todas as informações certinhas.</div>
+                        </div>
+                        <button onclick="copyToClipboard('script_duvida_pagamento')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2 px-4 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                            <i data-lucide="copy" class="w-4 h-4"></i> Copiar Resposta Parcelas
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- SEÇÃO 7: CRONOGRAMA INTERNO DO SETOR -->
+            <section id="prazos-internos" class="scroll-mt-28 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-200 pb-3">
+                    <div class="bg-slate-950 text-white p-1.5 rounded-lg">
+                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">7. Prazos e Metas de Trabalho (Interno)</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- PRAZOS PARA CONTATO COM CLIENTES -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                            Frequência Máxima de Contato
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-2.5 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100">
+                                <span class="text-xs font-semibold text-slate-700">Fichas novas vindas do Comercial</span>
+                                <span class="bg-blue-100 text-blue-800 font-extrabold text-[11px] px-2.5 py-1 rounded-full">07 dias</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2.5 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100">
+                                <span class="text-xs font-semibold text-slate-700">Aposentadoria e Auxílio Idoso</span>
+                                <span class="bg-blue-100 text-blue-800 font-extrabold text-[11px] px-2.5 py-1 rounded-full">30 dias</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2.5 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100">
+                                <span class="text-xs font-semibold text-slate-700">Décimo Terceiro, PAB, Recurso e Terceirizados</span>
+                                <span class="bg-blue-100 text-blue-800 font-extrabold text-[11px] px-2.5 py-1 rounded-full">60 dias</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2.5 hover:bg-slate-50 rounded-xl transition-all border border-transparent hover:border-slate-100">
+                                <span class="text-xs font-semibold text-slate-700">Demais casos do Setor</span>
+                                <span class="bg-indigo-100 text-indigo-800 font-extrabold text-[11px] px-2.5 py-1 rounded-full">20 dias</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FREQUÊNCIA DE CONSULTA DOS PROCESSOS -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                            Prazos de Consulta (Sistemas)
+                        </h4>
+                        <div class="space-y-4 text-xs text-slate-600">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 mt-0.5"></i>
+                                <div>
+                                    <h5 class="font-bold text-emerald-900">Todos os processos comuns</h5>
+                                    <p class="mt-0.5 text-slate-600">Devem ser consultados obrigatoriamente de forma <strong>semanal</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 flex items-start gap-3">
+                                <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 mt-0.5"></i>
+                                <div>
+                                    <h5 class="font-bold text-amber-900">Casos Terceirizados</h5>
+                                    <p class="mt-0.5 text-slate-600">A consulta deve ser realizada a cada <strong>15 dias</strong>.</p>
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-slate-100 rounded-xl flex items-start gap-3">
+                                <i data-lucide="slash" class="w-4 h-4 text-slate-400 mt-0.5"></i>
+                                <div>
+                                    <h5 class="font-bold text-slate-700">Casos SINE Judicial</h5>
+                                    <p class="mt-0.5 text-slate-500"><strong>Não precisam</strong> ser consultados de forma ativa recorrente.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- RODAPÉ DA PÁGINA -->
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 text-center text-xs mt-auto">
+        <p>© 2026 Script de Atendimento. Todos os direitos reservados.</p>
+        <p class="text-[10px] text-slate-600 mt-1">Aplicação Web do Script do Setor de Processos em Análise</p>
+    </footer>
+
+    <!-- LOGICA JAVASCRIPT DE INTERATIVIDADE -->
+    <script>
+        // Inicializar os ícones do Lucide
+        lucide.createIcons();
+
+        // Referências de elementos
+        const inputCliente = document.getElementById('inputCliente');
+        const inputAtendente = document.getElementById('inputAtendente');
+
+        // Valores padrões/placeholders iniciais
+        let nomeClienteVal = "FULANA";
+        let nomeAtendenteVal = "XXXXXXXX";
+
+        // Escuta digitação para atualizar variáveis no script em tempo real
+        function updateAllPlaceholders() {
+            nomeClienteVal = inputCliente.value.trim() !== "" ? inputCliente.value.trim() : "FULANA";
+            nomeAtendenteVal = inputAtendente.value.trim() !== "" ? inputAtendente.value.trim() : "XXXXXXXX";
+
+            // Atualizar todos os elementos com a classe placeholder-cliente
+            document.querySelectorAll('.placeholder-cliente').forEach(el => {
+                el.innerText = nomeClienteVal;
+            });
+            // Atualizar atendente
+            document.querySelectorAll('.placeholder-atendente').forEach(el => {
+                el.innerText = nomeAtendenteVal;
+            });
+        }
+
+        // Adicionar eventos de input nos campos do cabeçalho
+        inputCliente.addEventListener('input', updateAllPlaceholders);
+        inputAtendente.addEventListener('input', updateAllPlaceholders);
+
+        // Inicializar com os valores padrão
+        updateAllPlaceholders();
+
+        // Navegação Suave e Destaque Visual do Menu Lateral
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (section) {
+                // Scroll até a seção com margem
+                section.scrollIntoView({ behavior: 'smooth' });
+
+                // Altera as classes dos botões do menu lateral para destacar o ativo
+                const menuButtons = document.querySelectorAll('.menu-btn');
+                menuButtons.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes(id)) {
+                        btn.className = "menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-blue-700 bg-blue-50 border-l-4 border-blue-600 transition-all flex items-center gap-2.5";
+                        // Atualiza a cor do ícone
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('text-slate-400');
+                            icon.classList.add('text-blue-600');
+                        }
+                    } else {
+                        btn.className = "menu-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2.5";
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('text-blue-600');
+                            icon.classList.add('text-slate-400');
+                        }
+                    }
+                });
+            }
+        }
+
+        // Alternador de sub-abas: RG Pendente
+        function showSubTab(tabId, buttonElement) {
+            // Ocultar todos os cards de RG
+            document.querySelectorAll('.rg-card').forEach(card => {
+                card.classList.add('hidden');
+            });
+            // Mostrar o selecionado
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Atualizar estilos dos botões de aba do RG
+            document.querySelectorAll('.subtab-btn-rg').forEach(btn => {
+                btn.className = "subtab-btn-rg flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/50 transition-all";
+            });
+            buttonElement.className = "subtab-btn-rg flex-1 text-center py-2 px-3 rounded-lg text-xs font-bold text-blue-700 bg-white shadow-sm transition-all";
+        }
+
+        // Alternador de sub-abas: Biometria
+        function showSubTabBiometria(tabId, buttonElement) {
+            // Ocultar todos os cards de Biometria
+            document.querySelectorAll('.bio-card').forEach(card => {
+                card.classList.add('hidden');
+            });
+            // Mostrar o selecionado
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Atualizar estilos de botões
+            document.querySelectorAll('.subtab-btn-bio').forEach(btn => {
+                btn.className = "subtab-btn-bio flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium text-slate-600 hover:bg-white/50 transition-all";
+            });
+            buttonElement.className = "subtab-btn-bio flex-1 text-center py-2 px-3 rounded-lg text-xs font-bold text-blue-700 bg-white shadow-sm transition-all";
+        }
+
+        // Alternador de casos CNIS
+        function selectCNISCase(caseId, buttonElement) {
+            // Ocultar todos os sub-conteúdos CNIS
+            document.querySelectorAll('.cnis-content-card').forEach(card => {
+                card.classList.add('hidden');
+            });
+            // Mostrar o selecionado
+            document.getElementById(caseId).classList.remove('hidden');
+
+            // Atualizar botões
+            document.querySelectorAll('.cnis-btn').forEach(btn => {
+                btn.className = "cnis-btn py-2 px-1 text-center border-b-2 border-transparent text-slate-600 font-medium text-xs rounded-t-lg hover:bg-slate-50 transition-all";
+            });
+            buttonElement.className = "cnis-btn py-2 px-1 text-center border-b-2 border-indigo-600 text-indigo-700 font-bold text-xs rounded-t-lg bg-slate-50 transition-all";
+        }
+
+        // Função universal para copiar o texto com segurança (execCommand para iFrames)
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            // Criar textarea temporária para cópia segura
+            const tempTextArea = document.createElement('textarea');
+            // Remove marcações HTML, mantém quebra de linha normal
+            tempTextArea.value = el.innerText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            tempTextArea.setSelectionRange(0, 99999); // Suporte para celulares
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showFeedbackBanner("Script copiado com sucesso para a área de transferência!");
+                } else {
+                    showFeedbackBanner("Erro ao tentar copiar automaticamente. Selecione e copie manualmente.");
+                }
+            } catch (err) {
+                showFeedbackBanner("Erro no navegador. Copie manualmente o texto.");
+            }
+
+            document.body.removeChild(tempTextArea);
+        }
+
+        // Mostra o feedback superior que some após 3 segundos
+        function showFeedbackBanner(msg) {
+            const banner = document.getElementById('feedbackBanner');
+            const message = document.getElementById('feedbackMessage');
+            message.innerText = msg;
+            banner.classList.remove('hidden');
+            
+            setTimeout(() => {
+                banner.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
